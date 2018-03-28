@@ -116,7 +116,6 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
    *  Prediction 
    ****************************************************************************/
    Prediction(delta_t_);
-   cout << "Performing prediction." << endl;;
 
    
    /*****************************************************************************
@@ -124,11 +123,9 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
    ****************************************************************************/
    if (use_radar_ && meas_package.sensor_type_ == MeasurementPackage::RADAR){
 	   UpdateRadar(meas_package);
-	   cout << "Updating using Radar." << endl;;
    }
    if (use_laser_ && meas_package.sensor_type_ == MeasurementPackage::LASER){
 	   UpdateLidar(meas_package);
-   	   cout << "Updating using Laser." << endl;;
    }
 }
 
@@ -343,6 +340,12 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
   //update state mean and covariance matrix
   x_ = x_ + K * z_diff;
   P_ = P_ - K*S*K.transpose();
+  
+  /*****************************************************************************
+   *  Check Consistency using NIS
+   ****************************************************************************/
+   double nis = z_diff.transpose()*S.inverse()*z_diff;
+   cout << "Laser NIS = " << nis << endl;
 }
 
 /**
@@ -456,4 +459,10 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
   //update state mean and covariance matrix
   x_ = x_ + K * z_diff;
   P_ = P_ - K*S*K.transpose();
+  
+  /*****************************************************************************
+   *  Check Consistency using NIS
+   ****************************************************************************/
+   double nis = z_diff.transpose()*S.inverse()*z_diff;
+   cout << "Radar NIS = " << nis << endl;
 }
