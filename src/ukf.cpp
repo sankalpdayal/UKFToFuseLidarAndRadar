@@ -88,7 +88,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
   /*****************************************************************************
    *  Initialization
    ****************************************************************************/
- if (!is_initialized_){
+  if (!is_initialized_){
 	  is_initialized_ = true;
 	  if (meas_package.sensor_type_ == MeasurementPackage::RADAR){
 		  float px = meas_package.raw_measurements_[0]*cos(meas_package.raw_measurements_[1]);
@@ -105,7 +105,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 	  return;
   }
   
-   double delta_t_ =  meas_package.timestamp_ - time_us_;
+   double delta_t_ =  (meas_package.timestamp_ - time_us_)/ 1000000.0;	//dt - expressed in seconds
    time_us_ = meas_package.timestamp_;
    /*****************************************************************************
    *  Prediction 
