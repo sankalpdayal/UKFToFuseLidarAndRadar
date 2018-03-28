@@ -101,25 +101,30 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 		  x_ << meas_package.raw_measurements_[0], meas_package.raw_measurements_[1], 0.0, 0.0, 0.0;
 	  }
 	  time_us_ = meas_package.timestamp_;
+	  cout << "First sample received." << endl;;
 	  return;
   }
   
    double delta_t_ =  meas_package.timestamp_ - time_us_;
    time_us_ = meas_package.timestamp_;
-   
    /*****************************************************************************
    *  Prediction 
    ****************************************************************************/
    Prediction(delta_t_);
+   cout << "Performing prediction." << endl;;
 
    
    /*****************************************************************************
    *  Update
    ****************************************************************************/
-   if (use_radar_ && meas_package.sensor_type_ == MeasurementPackage::RADAR)
+   if (use_radar_ && meas_package.sensor_type_ == MeasurementPackage::RADAR){
 	   UpdateRadar(meas_package);
-   if (use_laser_ && meas_package.sensor_type_ == MeasurementPackage::LASER)
+	   cout << "Updating using Radar." << endl;;
+   }
+   if (use_laser_ && meas_package.sensor_type_ == MeasurementPackage::LASER){
 	   UpdateLidar(meas_package);
+   	   cout << "Updating using Laser." << endl;;
+   }
 }
 
 /**
