@@ -91,16 +91,14 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
  if (!is_initialized_){
 	  is_initialized_ = true;
 	  if (meas_package.sensor_type_ == MeasurementPackage::RADAR){
-		  /*float px = measurement_pack.raw_measurements_[0]*cos(measurement_pack.raw_measurements_[1]);
-		  float py = measurement_pack.raw_measurements_[0]*sin(measurement_pack.raw_measurements_[1]);
-		  float vx = measurement_pack.raw_measurements_[2]*cos(measurement_pack.raw_measurements_[1]);
-		  float vy = measurement_pack.raw_measurements_[2]*sin(measurement_pack.raw_measurements_[1]);
-		  ekf_.x_ << px, py, vx, vy;*/
+		  float px = meas_package.raw_measurements_[0]*cos(meas_package.raw_measurements_[1]);
+		  float py = meas_package.raw_measurements_[0]*sin(meas_package.raw_measurements_[1]);
+		  float vx = meas_package.raw_measurements_[2]*cos(meas_package.raw_measurements_[1]);
+		  float vy = meas_package.raw_measurements_[2]*sin(meas_package.raw_measurements_[1]);
+		  x_ << px, py, sqrt(vx*vx + vy*vy), atan2(vy,vx), 0;
 	  }
 	  else{
-		  /*
-		  ekf_.x_ << measurement_pack.raw_measurements_[0], measurement_pack.raw_measurements_[1], 0.0, 0.0;
-		  */
+		  x_ << measurement_pack.raw_measurements_[0], measurement_pack.raw_measurements_[1], 0.0, 0.0;
 	  }
 	  time_us_ = meas_package.timestamp_;
 	  return;
