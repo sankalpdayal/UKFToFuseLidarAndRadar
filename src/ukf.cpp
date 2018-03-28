@@ -95,10 +95,10 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 		  float py = meas_package.raw_measurements_[0]*sin(meas_package.raw_measurements_[1]);
 		  float vx = meas_package.raw_measurements_[2]*cos(meas_package.raw_measurements_[1]);
 		  float vy = meas_package.raw_measurements_[2]*sin(meas_package.raw_measurements_[1]);
-		  x_ << px, py, sqrt(vx*vx + vy*vy), atan2(vy,vx), 0;
+		  x_ << px, py, sqrt(vx*vx + vy*vy), atan2(vy,vx), 0.0;
 	  }
 	  else{
-		  x_ << meas_package.raw_measurements_[0], meas_package.raw_measurements_[1], 0.0, 0.0;
+		  x_ << meas_package.raw_measurements_[0], meas_package.raw_measurements_[1], 0.0, 0.0, 0.0;
 	  }
 	  time_us_ = meas_package.timestamp_;
 	  return;
