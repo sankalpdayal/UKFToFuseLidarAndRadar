@@ -90,7 +90,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
    ****************************************************************************/
  if (!is_initialized_){
 	  is_initialized_ = true;
-	  if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR){
+	  if (meas_package.sensor_type_ == MeasurementPackage::RADAR){
 		  /*float px = measurement_pack.raw_measurements_[0]*cos(measurement_pack.raw_measurements_[1]);
 		  float py = measurement_pack.raw_measurements_[0]*sin(measurement_pack.raw_measurements_[1]);
 		  float vx = measurement_pack.raw_measurements_[2]*cos(measurement_pack.raw_measurements_[1]);
@@ -102,12 +102,12 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 		  ekf_.x_ << measurement_pack.raw_measurements_[0], measurement_pack.raw_measurements_[1], 0.0, 0.0;
 		  */
 	  }
-	  time_us_ = measurement_pack.timestamp_;
+	  time_us_ = meas_package.timestamp_;
 	  return;
   }
   
-   double delta_t_ =  measurement_pack.timestamp_ - time_us_;
-   time_us_ = measurement_pack.timestamp_;
+   double delta_t_ =  meas_package.timestamp_ - time_us_;
+   time_us_ = meas_package.timestamp_;
    
    /*****************************************************************************
    *  Prediction 
@@ -118,10 +118,10 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
    /*****************************************************************************
    *  Update
    ****************************************************************************/
-   if (use_radar_ && measurement_pack.sensor_type_ == MeasurementPackage::RADAR)
-	   UpdateRadar(MeasurementPackage meas_package);
-   if (use_laser_ && measurement_pack.sensor_type_ == MeasurementPackage::LASER)
-	   UpdateLidar(MeasurementPackage meas_package);
+   if (use_radar_ && meas_package.sensor_type_ == MeasurementPackage::RADAR)
+	   UpdateRadar(meas_package);
+   if (use_laser_ && meas_package.sensor_type_ == MeasurementPackage::LASER)
+	   UpdateLidar(meas_package);
 }
 
 /**
@@ -162,8 +162,8 @@ void UKF::Prediction(double delta_t) {
   Xsig_aug.col(0)  = x_aug;
   for (int i = 0; i< n_aug_; i++)
   {
-    Xsig_aug.col(i+1)       = x_aug + sqrt(lambda+n_aug) * L.col(i);
-    Xsig_aug.col(i+1+n_aug) = x_aug - sqrt(lambda+n_aug) * L.col(i);
+    Xsig_aug.col(i+1)       = x_aug + sqrt(lambda_ + n_aug_) * L.col(i);
+    Xsig_aug.col(i+1+n_aug_) = x_aug - sqrt(lambda_ + n_aug_) * L.col(i);
   }
   
   
@@ -173,7 +173,7 @@ void UKF::Prediction(double delta_t) {
    *  Prediction - Predict Sigma Points
    ****************************************************************************/
    //predict sigma points
-  for (int i = 0; i< 2*n_aug+1; i++)
+  for (int i = 0; i< 2*n_aug_+1; i++)
   {
     //extract values for better readability
     double p_x = Xsig_aug(0,i);
@@ -223,25 +223,25 @@ void UKF::Prediction(double delta_t) {
    *  Prediction - Predict Mean and Covariance
    ****************************************************************************/
   // set weights
-  double weight_0 = lambda/(lambda+n_aug);
+  double weight_0 = lambda_/(lambda_+n_aug_);
   weights_(0) = weight_0;
-  for (int i=1; i<2*n_aug+1; i++) {  //2n+1 weights
-    double weight = 0.5/(n_aug+lambda);
+  for (int i=1; i<2*n_aug_+1; i++) {  //2n+1 weights
+    double weight = 0.5/(n_aug_+lambda_);
     weights_(i) = weight;
   }
 
   //predicted state mean
   x_.fill(0.0);
-  for (int i = 0; i < 2 * n_aug + 1; i++) {  //iterate over sigma points
+  for (int i = 0; i < 2 * n_aug_ + 1; i++) {  //iterate over sigma points
     x_ = x_+ weights_(i) * Xsig_pred_.col(i);
   }
 
   //predicted state covariance matrix
   P_.fill(0.0);
-  for (int i = 0; i < 2 * n_aug + 1; i++) {  //iterate over sigma points
+  for (int i = 0; i < 2 * n_aug_ + 1; i++) {  //iterate over sigma points
 
     // state difference
-    VectorXd x_diff = Xsig_pred_.col(i) - x;
+    VectorXd x_diff = Xsig_pred_.col(i) - x_;
     //angle normalization
     while (x_diff(3)> M_PI) x_diff(3)-=2.*M_PI;
     while (x_diff(3)<-M_PI) x_diff(3)+=2.*M_PI;
