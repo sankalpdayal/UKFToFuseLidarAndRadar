@@ -11,7 +11,7 @@ Following changes were done in the files.
 ### `src/ukf.cpp`
 1. Inside `constructer()`, finished initializing the UKF by setting up parameters like is_initialized_, time_us_, n_aug_, lambda_ etc.
 2. Inside function `ProcessMeasurement()`, initializes state using measurements and process noise. If rader then first converted radar measurements from polar to cartesian coordinates.
-3. Inside function `ProcessMeasurement()`, call 'Prediction()' and 'UpdateRadar()` or `UpdateLidar()'. Update is done depending on the type of measurement.
+3. Inside function `ProcessMeasurement()`, call `Prediction()` and `UpdateRadar()` or `UpdateLidar()`. Update is done depending on the type of measurement.
 4. Completed function 'Prediction()' by implementing 3 steps in prediction; Generate Sigma Points, Predict Sigma Points, Predict Mean and Covariance.
 5. Completed functions 'UpdateRadar()' and `UpdateLidar()` by implementing 2 steps; Predict Measurement, Update State
 6. NIS is also calculated for radar and laser in functions 'UpdateRadar()' and `UpdateLidar()` separately.  
